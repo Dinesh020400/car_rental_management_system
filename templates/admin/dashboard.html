@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - Car Rental System{% endblock %}
+
+{% block content %}
+<h2>Admin Dashboard</h2>
+
+<div class="row mt-4">
+    <div class="col-md-4">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-header">Cars</div>
+            <div class="card-body">
+                <h5 class="card-title">{{ cars|length }} Cars</h5>
+                <p class="card-text">Manage your car inventory</p>
+                <a href="{{ url_for('admin_cars') }}" class="btn btn-light">Manage Cars</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-header">Users</div>
+            <div class="card-body">
+                <h5 class="card-title">{{ users|length }} Users</h5>
+                <p class="card-text">View registered users</p>
+                <a href="#" class="btn btn-light">View Users</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-info mb-3">
+            <div class="card-header">Bookings</div>
+            <div class="card-body">
+                <h5 class="card-title">{{ bookings|length }} Bookings</h5>
+                <p class="card-text">Manage all bookings</p>
+                <a href="{{ url_for('admin_bookings') }}" class="btn btn-light">Manage Bookings</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Recent Bookings</h5>
+            </div>
+            <div class="card-body">
+                {% if bookings %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Car</th>
+                                <th>User</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for booking in bookings[:5] %}
+                            <tr>
+                                <td>{{ booking.id[:8] }}...</td>
+                                <td>{{ booking.car_id }}</td>
+                                <td>{{ booking.user_id }}</td>
+                                <td>
+                                    <span class="badge {% if booking.status == 'confirmed' %}bg-success{% elif booking.status == 'cancelled' %}bg-danger{% else %}bg-warning{% endif %}">
+                                        {{ booking.status }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p>No bookings available.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Available Cars</h5>
+            </div>
+            <div class="card-body">
+                {% set available_cars = cars|selectattr('available', 'equalto', true)|list %}
+                {% if available_cars %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Car</th>
+                                <th>Price/Day</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for car in available_cars[:5] %}
+                            <tr>
+                                <td>{{ car.id }}</td>
+                                <td>{{ car.make }} {{ car.model }} ({{ car.year }})</td>
+                                <td>${{ car.price_per_day }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p>No available cars.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

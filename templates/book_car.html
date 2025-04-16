@@ -1,0 +1,192 @@
+{% extends 'base.html' %}
+
+{% block title %}Book {{ car.make }} {{ car.model }} - Car Rental System{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('home') }}">Home</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('car_details', car_id=car.id) }}">{{ car.make }} {{ car.model }}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Book</li>
+    </ol>
+</nav>
+
+<div class="row">
+    <div class="col-lg-5">
+        <div class="card mb-4 border-0 shadow-sm">
+            <div class="card-body p-0">
+                <div class="position-relative">
+                    <img src="/static/car_images/{{ car.image.split('/')[-1] }}" class="img-fluid w-100" style="border-radius: 0.5rem 0.5rem 0 0; height: 250px; object-fit: cover;" alt="{{ car.make }} {{ car.model }}">
+                    <div class="position-absolute top-0 start-0 m-3">
+                        <span class="badge bg-success px-3 py-2"><i class="fas fa-check-circle me-1"></i>Available</span>
+                    </div>
+                </div>
+                <div class="p-4">
+                    <h3 class="mb-3">{{ car.make }} {{ car.model }} <span class="text-muted">({{ car.year }})</span></h3>
+
+                    <div class="car-specs mb-4">
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-car-side text-primary me-2"></i>
+                                    <span>{{ car.make }}</span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-calendar-alt text-primary me-2"></i>
+                                    <span>{{ car.year }}</span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-gas-pump text-primary me-2"></i>
+                                    <span>Petrol</span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-cogs text-primary me-2"></i>
+                                    <span>Automatic</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pricing-info p-3 bg-light rounded-3 mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Daily Rate:</h5>
+                            <span class="h4 mb-0 text-primary">₹{{ car.price_inr }}</span>
+                        </div>
+                    </div>
+
+                    <a href="{{ url_for('car_details', car_id=car.id) }}" class="btn btn-outline-secondary w-100">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Car Details
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h4 class="mb-0"><i class="fas fa-calendar-check me-2 text-primary"></i>Book This Car</h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="{{ url_for('book_car', car_id=car.id) }}" id="bookingForm">
+                    <div class="row mb-4">
+                        <div class="col-md-6 mb-3 mb-md-0">
+                            <label for="start_date" class="form-label">Pickup Date</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-calendar"></i></span>
+                                <input type="text" class="form-control" id="start_date" name="start_date" placeholder="Select date" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="end_date" class="form-label">Return Date</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                                <input type="text" class="form-control" id="end_date" name="end_date" placeholder="Select date" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="booking-summary mb-4" id="bookingSummary" style="display: none;">
+                        <h5 class="mb-3">Booking Summary</h5>
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <div class="row mb-2">
+                                    <div class="col-6 text-muted">Car:</div>
+                                    <div class="col-6 text-end">{{ car.make }} {{ car.model }}</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-6 text-muted">Pickup Date:</div>
+                                    <div class="col-6 text-end" id="summaryStartDate">-</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-6 text-muted">Return Date:</div>
+                                    <div class="col-6 text-end" id="summaryEndDate">-</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-6 text-muted">Duration:</div>
+                                    <div class="col-6 text-end" id="summaryDuration">-</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-6 text-muted">Daily Rate:</div>
+                                    <div class="col-6 text-end">₹{{ car.price_inr }}</div>
+                                </div>
+                                <hr>
+                                <div class="row fw-bold">
+                                    <div class="col-6">Total Price:</div>
+                                    <div class="col-6 text-end text-primary" id="summaryTotalPrice">-</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-check-circle me-2"></i>Confirm Booking
+                        </button>
+                        <a href="{{ url_for('car_details', car_id=car.id) }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize date pickers
+        const today = new Date();
+
+        const startDatePicker = flatpickr("#start_date", {
+            minDate: "today",
+            dateFormat: "Y-m-d",
+            onChange: function(selectedDates, dateStr) {
+                endDatePicker.set('minDate', dateStr);
+                updateBookingSummary();
+            }
+        });
+
+        const endDatePicker = flatpickr("#end_date", {
+            minDate: today,
+            dateFormat: "Y-m-d",
+            onChange: function() {
+                updateBookingSummary();
+            }
+        });
+
+        // Update booking summary
+        function updateBookingSummary() {
+            const startDate = document.getElementById('start_date').value;
+            const endDate = document.getElementById('end_date').value;
+
+            if (startDate && endDate) {
+                const start = new Date(startDate);
+                const end = new Date(endDate);
+                const diffTime = Math.abs(end - start);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // Including both start and end days
+
+                const totalPrice = diffDays * {{ car.price_inr }};
+
+                document.getElementById('summaryStartDate').textContent = formatDate(start);
+                document.getElementById('summaryEndDate').textContent = formatDate(end);
+                document.getElementById('summaryDuration').textContent = diffDays + ' days';
+                document.getElementById('summaryTotalPrice').textContent = '₹' + totalPrice.toFixed(2);
+
+                document.getElementById('bookingSummary').style.display = 'block';
+            }
+        }
+
+        function formatDate(date) {
+            const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+            return date.toLocaleDateString('en-US', options);
+        }
+    });
+</script>
+{% endblock %}

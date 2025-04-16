@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Car Rental System{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3B82F6;
+            --primary-dark: #2563EB;
+            --secondary-color: #10B981;
+            --secondary-dark: #059669;
+            --accent-color: #8B5CF6;
+            --text-color: #1F2937;
+            --light-gray: #F3F4F6;
+            --dark-gray: #4B5563;
+            --light-bg: #F9FAFB;
+            --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-color);
+            line-height: 1.7;
+            background-color: var(--light-bg);
+            font-size: medium;
+        }
+
+        .navbar {
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            background: var(--primary-color) !important;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: white !important;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-link {
+            font-weight: 500;
+            color: rgba(255,255,255,0.9) !important;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            margin: 0 0.25rem;
+        }
+
+        .nav-link:hover {
+            color: white !important;
+            background-color: rgba(255,255,255,0.15);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px -1px rgba(99, 102, 241, 0.3);
+        }
+
+        .card {
+            border: none;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            background: white;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+
+        .card-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .form-control {
+            border: 1px solid var(--light-gray);
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+            box-shadow: none;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+        }
+
+        .alert {
+            border: none;
+            border-radius: 0.5rem;
+            padding: 1rem 1.25rem;
+        }
+
+        .container {
+            padding: 2rem 1rem;
+        }
+
+        .page-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 2.5rem;
+            color: var(--text-color);
+            margin-bottom: 2rem;
+        }
+
+        .btn {
+            border-radius: 0.5rem;
+            padding: 0.5rem 1.25rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--secondary-dark);
+            border-color: var(--secondary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .car-card {
+            border: none;
+            border-radius: 1rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            background: white;
+            box-shadow: var(--card-shadow);
+            height: 100%;
+        }
+
+        .car-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .card-img-top {
+            height: 220px;
+            width: 100%;
+            object-fit: cover;
+            display: block;
+            background-color: #f8f9fa;
+        }
+
+        .card {
+            border: none;
+            border-radius: 1rem;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+        }
+
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid var(--light-gray);
+            padding: 1.25rem 1.5rem;
+            font-weight: 600;
+        }
+
+        .alert-info {
+            background-color: rgba(59, 130, 246, 0.1);
+            color: var(--primary-color);
+        }
+
+        .footer {
+            margin-top: 4rem;
+            padding: 3rem 0;
+            background-color: var(--text-color);
+            color: white;
+        }
+
+        .table {
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+        }
+
+        .badge {
+            padding: 0.5rem 0.75rem;
+            font-weight: 500;
+            border-radius: 0.375rem;
+        }
+
+        /* Dark mode toggle */
+        .dark-mode-toggle {
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            margin-left: 1rem;
+        }
+
+        /* Price badge */
+        .price-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--primary-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Dark mode styles */
+        html.dark-mode {
+            --primary-color: #60A5FA;
+            --primary-dark: #3B82F6;
+            --secondary-color: #34D399;
+            --secondary-dark: #10B981;
+            --text-color: #F9FAFB;
+            --light-gray: #374151;
+            --dark-gray: #1F2937;
+            --light-bg: #111827;
+            --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+        }
+
+        html.dark-mode body {
+            background-color: var(--light-bg);
+            color: var(--text-color);
+        }
+
+        html.dark-mode .card,
+        html.dark-mode .card-header,
+        html.dark-mode .modal-content {
+            background-color: var(--dark-gray);
+            border-color: var(--light-gray);
+        }
+
+        html.dark-mode .table {
+            color: var(--text-color);
+        }
+
+        html.dark-mode .table-light {
+            background-color: var(--light-gray);
+            color: var(--text-color);
+        }
+
+        html.dark-mode .bg-light {
+            background-color: var(--light-gray) !important;
+        }
+
+        html.dark-mode .text-dark {
+            color: var(--text-color) !important;
+        }
+
+        html.dark-mode .text-muted {
+            color: #9CA3AF !important;
+        }
+
+        html.dark-mode .border-light {
+            border-color: var(--light-gray) !important;
+        }
+
+        html.dark-mode .dropdown-menu {
+            background-color: var(--dark-gray);
+            border-color: var(--light-gray);
+        }
+
+        html.dark-mode .dropdown-item {
+            color: var(--text-color);
+        }
+
+        html.dark-mode .dropdown-item:hover {
+            background-color: var(--light-gray);
+        }
+
+        .table thead th {
+            background-color: var(--light-gray);
+            border-bottom: none;
+            font-weight: 600;
+        }
+
+        .container {
+            padding: 0 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('home') }}">
+                <i class="fas fa-car-side me-2"></i>Car Rental
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('home') }}"><i class="fas fa-home me-1"></i>Home</a>
+                    </li>
+                    {% if session.get('is_admin') %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin_dashboard') }}"><i class="fas fa-tachometer-alt me-1"></i>Admin</a>
+                    </li>
+                    {% endif %}
+                </ul>
+                <form class="d-flex me-3" action="{{ url_for('home') }}" method="get">
+                    <div class="input-group">
+                        <input class="form-control" type="search" name="search" placeholder="Search cars..." aria-label="Search" value="{{ request.args.get('search', '') }}">
+                        <button class="btn btn-light" type="submit"><i class="fas fa-search"></i></button>
+                    </div>
+                </form>
+                <ul class="navbar-nav">
+                    {% if session.get('user_id') %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('my_bookings') }}"><i class="fas fa-book me-1"></i>My Bookings</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user-circle me-1"></i>{{ session.get('username') }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="{{ url_for('my_bookings') }}"><i class="fas fa-book me-2"></i>My Bookings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('login') }}"><i class="fas fa-sign-in-alt me-1"></i>Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-light text-primary ms-2" href="{{ url_for('register') }}"><i class="fas fa-user-plus me-1"></i>Register</a>
+                    </li>
+                    {% endif %}
+                </ul>
+                <div class="dark-mode-toggle ms-2" id="darkModeToggle">
+                    <i class="fas fa-moon"></i>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-4">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="alert alert-info">
+            <ul class="mb-0 list-unstyled">
+                {% for message in messages %}
+                <li><i class="fas fa-info-circle me-2"></i>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <h5 class="mb-3 text-white">Car Rental</h5>
+                    <p class="text-white-50">Find the perfect car for your journey. We offer a wide range of vehicles at competitive prices.</p>
+                </div>
+                <div class="col-md-2 mb-4 mb-md-0">
+                    <h6 class="mb-3 text-white">Quick Links</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="{{ url_for('home') }}" class="text-white-50 text-decoration-none">Home</a></li>
+                        <li class="mb-2"><a href="{{ url_for('login') }}" class="text-white-50 text-decoration-none">Login</a></li>
+                        <li class="mb-2"><a href="{{ url_for('register') }}" class="text-white-50 text-decoration-none">Register</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4 mb-md-0">
+                    <h6 class="mb-3 text-white">Contact Us</h6>
+                    <ul class="list-unstyled text-white-50">
+                        <li class="mb-2"><i class="fas fa-map-marker-alt me-2"></i>123 Main St, City</li>
+                        <li class="mb-2"><i class="fas fa-phone me-2"></i>+1 234 567 8900</li>
+                        <li class="mb-2"><i class="fas fa-envelope me-2"></i>info@carrentalapp.com</li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h6 class="mb-3 text-white">Follow Us</h6>
+                    <div class="d-flex">
+                        <a href="#" class="text-white me-3"><i class="fab fa-facebook-f fa-lg"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-twitter fa-lg"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-instagram fa-lg"></i></a>
+                        <a href="#" class="text-white"><i class="fab fa-linkedin-in fa-lg"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="mt-4 mb-4 border-top border-secondary">
+            <div class="row">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="mb-0 text-white-50">&copy; 2023 Car Rental System. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <p class="mb-0 text-white-50">Terms of Service | Privacy Policy</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        // Initialize date pickers
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize flatpickr on date inputs
+            if (document.getElementById('start_date')) {
+                flatpickr("#start_date", {
+                    minDate: "today",
+                    dateFormat: "Y-m-d"
+                });
+            }
+
+            if (document.getElementById('end_date')) {
+                flatpickr("#end_date", {
+                    minDate: "today",
+                    dateFormat: "Y-m-d"
+                });
+            }
+
+            // Dark mode toggle functionality
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const htmlElement = document.documentElement;
+
+            if (darkModeToggle) {
+                darkModeToggle.addEventListener('click', function() {
+                    if (htmlElement.classList.contains('dark-mode')) {
+                        htmlElement.classList.remove('dark-mode');
+                        darkModeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                        localStorage.setItem('darkMode', 'false');
+                    } else {
+                        htmlElement.classList.add('dark-mode');
+                        darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                        localStorage.setItem('darkMode', 'true');
+                    }
+                });
+
+                // Check for saved dark mode preference
+                if (localStorage.getItem('darkMode') === 'true') {
+                    htmlElement.classList.add('dark-mode');
+                    darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
