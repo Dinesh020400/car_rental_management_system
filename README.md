@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # 🚗 Car Rental Management System
 
 A modern, full-featured car rental management system built with Flask, MongoDB, and advanced features including GPS tracking, analytics, professional invoicing, and more.
@@ -410,4 +410,3 @@ This project is licensed under the MIT License.
 
 For any questions or suggestions, please contact:
 - GitHub: [Dinesh020400](https://github.com/Dinesh020400)
->>>>>>> cacc96d203820384eeb4c1f8f91818e62ec3d418
