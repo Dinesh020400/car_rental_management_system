@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}404 - Page Not Found{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class="error-template">
+                <h1 style="font-size: 100px; color: #007bff;">404</h1>
+                <h2>Oops! Page Not Found</h2>
+                <div class="error-details mb-4">
+                    <p class="text-muted">Sorry, the page you are looking for doesn't exist!</p>
+                </div>
+                <div class="error-actions">
+                    <a href="{{ url_for('index') }}" class="btn btn-primary btn-lg me-2">
+                        <i class="fas fa-home"></i> Take Me Home
+                    </a>
+                    <a href="javascript:history.back()" class="btn btn-secondary btn-lg">
+                        <i class="fas fa-arrow-left"></i> Go Back
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.error-template {
+    padding: 40px 15px;
+    text-align: center;
+}
+.error-actions {
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+</style>
+{% endblock %}

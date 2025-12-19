@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+
+{% block title %}Confirm Booking - {{ car.make }} {{ car.model }}{% endblock %}
+
+{% block content %}
+<div class="row g-5 py-4">
+    <!-- Left Column: Booking Summary (Sticky) -->
+    <div class="col-lg-4 order-lg-last fade-in-up" style="animation-delay: 0.2s;">
+        <div class="card border-0 shadow-lg position-sticky" style="top: 100px; border-radius: 16px;">
+            <div class="card-header bg-white border-0 pt-4 px-4 pb-0">
+                <h5 class="fw-bold mb-0 text-muted small text-uppercase letter-spacing-1">Order Summary</h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="d-flex mb-4">
+                    <img src="/static/car_images/{{ car.image.split('/')[-1] if car.image else 'default_car.jpg' }}"
+                        class="rounded-3 shadow-sm object-fit-cover" width="80" height="80" alt="{{ car.make }}">
+                    <div class="ms-3">
+                        <h6 class="fw-bold mb-1">{{ car.make }} {{ car.model }}</h6>
+                        <span class="badge bg-light text-dark border">{{ car.year }}</span>
+                        <div class="small text-primary fw-bold mt-1">₹{{ car.price_inr }} / day</div>
+                    </div>
+                </div>
+
+                <div class="price-breakdown mb-4" id="bookingSummary" style="display: none;">
+                    <div class="d-flex justify-content-between mb-2 small text-muted">
+                        <span>Duration</span>
+                        <span class="fw-bold text-dark" id="summaryDuration">-</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2 small text-muted">
+                        <span>Base Price</span>
+                        <span class="fw-bold text-dark" id="summaryBasePrice">-</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2 small text-muted">
+                        <span>Taxes & Fees</span>
+                        <span class="fw-bold text-dark">₹0</span>
+                    </div>
+                    <hr class="border-secondary border-opacity-10 my-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="fw-bold text-dark">Total Due</span>
+                        <span class="fs-4 fw-bold text-primary" id="summaryTotalPrice">₹0</span>
+                    </div>
+                </div>
+
+                <div class="alert alert-info border-0 d-flex align-items-center mb-0" id="selectDatesMessage">
+                    <i class="fas fa-info-circle me-3 fs-4"></i>
+                    <small>Select pickup and return dates to calculate price.</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Booking Form -->
+    <div class="col-lg-8 fade-in-up">
+        <h2 class="fw-bold mb-4">Complete Your Booking</h2>
+
+        <form method="POST" action="{{ url_for('book_car', car_id=car._id) }}" id="bookingForm" class="needs-validation"
+            novalidate>
+            <!-- Dates Section -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-4"><i class="fas fa-calendar-alt me-2 text-primary"></i>Dates & Time</h5>
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold text-uppercase">Pickup</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white"><i
+                                        class="fas fa-calendar-day text-muted"></i></span>
+                                <input type="date" class="form-control border-start-0 ps-0" id="start_date"
+                                    name="start_date" min="{{ today }}" required>
+                            </div>
+                            <div class="mt-2">
+                                <select class="form-select border-0 bg-light" id="pickup_time" name="pickup_time"
+                                    required>
+                                    <option value="" selected disabled>Select Time</option>
+                                    <option value="09:00 AM">09:00 AM</option>
+                                    <option value="10:00 AM">10:00 AM</option>
+                                    <option value="11:00 AM">11:00 AM</option>
+                                    <option value="12:00 PM">12:00 PM</option>
+                                    <option value="01:00 PM">01:00 PM</option>
+                                    <option value="02:00 PM">02:00 PM</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold text-uppercase">Return</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white"><i
+                                        class="fas fa-calendar-check text-muted"></i></span>
+                                <input type="date" class="form-control border-start-0 ps-0" id="end_date"
+                                    name="end_date" min="{{ today }}" required>
+                            </div>
+                            <div class="mt-2">
+                                <select class="form-select border-0 bg-light" id="drop_time" name="drop_time" required>
+                                    <option value="" selected disabled>Select Time</option>
+                                    <option value="09:00 AM">09:00 AM</option>
+                                    <option value="10:00 AM">10:00 AM</option>
+                                    <option value="11:00 AM">11:00 AM</option>
+                                    <option value="12:00 PM">12:00 PM</option>
+                                    <option value="01:00 PM">01:00 PM</option>
+                                    <option value="02:00 PM">02:00 PM</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Location Section -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-4"><i class="fas fa-map-marker-alt me-2 text-primary"></i>Location</h5>
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold text-uppercase">Pickup Location</label>
+                            <select class="form-select py-3" id="pickup_location" name="pickup_location" required>
+                                <option value="">Select pickup point</option>
+                                {% for location in locations %}
+                                <option value="{{ location.id }}">{{ location.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold text-uppercase">Drop-off Location</label>
+                            <select class="form-select py-3" id="drop_location" name="drop_location" required>
+                                <option value="">Select drop-off point</option>
+                                {% for location in locations %}
+                                <option value="{{ location.id }}">{{ location.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="d-grid mt-5">
+                <button type="submit" class="btn btn-primary btn-lg py-3 fw-bold shadow-md">
+                    Confirm & Pay Now <i class="fas fa-lock ms-2"></i>
+                </button>
+                <div class="text-center mt-3">
+                    <small class="text-muted"><i class="fas fa-shield-alt me-1"></i>Secure SSL Connection</small>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const startDateInput = document.getElementById('start_date');
+        const endDateInput = document.getElementById('end_date');
+        const summarySection = document.getElementById('bookingSummary');
+        const messageSection = document.getElementById('selectDatesMessage');
+
+        // ✅ Correct Jinja → JavaScript value
+        const pricePerDay = {{ car.price_inr | int
+    }};
+
+    function updateSummary() {
+        if (!startDateInput.value || !endDateInput.value) {
+            summarySection.style.display = 'none';
+            messageSection.style.display = 'flex';
+            return;
+        }
+
+        const start = new Date(startDateInput.value);
+        const end = new Date(endDateInput.value);
+
+        if (start > end) {
+            summarySection.style.display = 'none';
+            messageSection.style.display = 'flex';
+            return;
+        }
+
+        const diffTime = end - start;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+        const total = diffDays * pricePerDay;
+
+        document.getElementById('summaryDuration').textContent = diffDays + " Days";
+        document.getElementById('summaryBasePrice').textContent = "₹" + total;
+        document.getElementById('summaryTotalPrice').textContent = "₹" + total;
+
+        summarySection.style.display = 'block';
+        messageSection.style.display = 'none';
+    }
+
+    startDateInput.addEventListener('change', function () {
+        endDateInput.min = this.value;
+        updateSummary();
+    });
+
+    endDateInput.addEventListener('change', updateSummary);
+
+});
+</script>
+
+{% endblock %}

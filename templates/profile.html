@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile - Car Rental System{% endblock %}
+
+{% block content %}
+<div class="row g-5 py-4">
+    <!-- Left Sidebar: Navigation -->
+    <div class="col-lg-3">
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden sticky-top" style="top: 100px;">
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    <a href="{{ url_for('profile') }}"
+                        class="list-group-item list-group-item-action active border-0 py-3 px-4 d-flex align-items-center">
+                        <i class="fas fa-user-circle me-3 fa-lg"></i>
+                        <span class="fw-bold">My Profile</span>
+                    </a>
+                    <a href="{{ url_for('edit_profile') }}"
+                        class="list-group-item list-group-item-action border-0 py-3 px-4 d-flex align-items-center">
+                        <i class="fas fa-edit me-3 text-muted"></i>
+                        <span class="text-dark">Edit Profile</span>
+                    </a>
+                    {% if not session.get('is_admin') %}
+                    <a href="{{ url_for('my_bookings') }}"
+                        class="list-group-item list-group-item-action border-0 py-3 px-4 d-flex align-items-center">
+                        <i class="fas fa-car me-3 text-muted"></i>
+                        <span class="text-dark">My Bookings</span>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card-footer bg-light border-0 p-4 text-center">
+                <small class="text-muted d-block">Member Since</small>
+                <span class="fw-bold text-dark">{{ user.created_at.strftime('%B %Y') if user.created_at else 'Jan 2024'
+                    }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Profile Content -->
+    <div class="col-lg-9 fade-in-up">
+        <h2 class="fw-bold mb-4">Profile Overview</h2>
+
+        <div class="card border-0 shadow-lg rounded-4 overflow-hidden mb-4">
+            <!-- Profile Header Config -->
+            <div class="bg-primary bg-opacity-10 opacity-75 position-relative" style="height: 150px;">
+                <div class="position-absolute bottom-0 start-0 w-100 h-50 bg-gradient-to-t from-white to-transparent">
+                </div>
+            </div>
+
+            <div class="card-body px-5 pb-5 pt-0 position-relative">
+                <div class="d-flex flex-column flex-md-row align-items-center align-items-md-end mb-5"
+                    style="margin-top: -75px;">
+                    <!-- Profile Image -->
+                    <div class="position-relative">
+                        {% if user.profile_picture %}
+                        <img src="{{ user.profile_picture }}"
+                            class="rounded-circle border border-4 border-white shadow-md object-fit-cover" width="150"
+                            height="150" alt="Profile">
+                        {% else %}
+                        <div class="rounded-circle border border-4 border-white shadow-md bg-white d-flex align-items-center justify-content-center text-primary"
+                            style="width: 150px; height: 150px;">
+                            <i class="fas fa-user fa-4x"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="ms-md-4 text-center text-md-start mt-3 mt-md-0">
+                        <h2 class="fw-bold mb-1">{{ user.username }}</h2>
+                        <div class="d-flex align-items-center justify-content-center justify-content-md-start gap-2">
+                            <span class="badge bg-light text-dark border"><i class="fas fa-envelope me-2"></i>{{
+                                user.email }}</span>
+                            {% if user.is_admin %}
+                            <span class="badge bg-danger">Administrator</span>
+                            {% else %}
+                            <span class="badge bg-primary">User</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="ms-md-auto mt-4 mt-md-0">
+                        <button class="btn btn-outline-primary fw-bold px-4" data-bs-toggle="modal"
+                            data-bs-target="#changePasswordModal">
+                            <i class="fas fa-key me-2"></i>Change Password
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Info Grid -->
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="p-4 rounded-4 bg-light border h-100">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-white p-2 rounded-circle shadow-sm text-primary me-3">
+                                    <i class="fas fa-id-card"></i>
+                                </div>
+                                <h6 class="fw-bold mb-0">Role & Status</h6>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="text-muted">Account Type</span>
+                                <span class="fw-bold">{{ 'Admin' if user.is_admin else 'Standard User' }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-muted">Verification</span>
+                                {% if user.email_verified %}
+                                <span class="text-success fw-bold"><i
+                                        class="fas fa-check-circle me-1"></i>Verified</span>
+                                {% else %}
+                                <span class="text-warning fw-bold"><i
+                                        class="fas fa-exclamation-circle me-1"></i>Pending</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-4 rounded-4 bg-light border h-100">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-white p-2 rounded-circle shadow-sm text-primary me-3">
+                                    <i class="fas fa-phone"></i>
+                                </div>
+                                <h6 class="fw-bold mb-0">Contact Info</h6>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="text-muted">Phone Number</span>
+                                <span class="fw-bold">{{ user.phone if user.phone else 'Not Set' }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-muted">Location</span>
+                                <span class="fw-bold">India</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Change Password Modal -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold">Change Password</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('change_password') }}">
+                <div class="modal-body p-4">
+                    <div class="bg-light p-3 rounded-3 mb-4 text-center">
+                        <i class="fas fa-lock fa-2x text-primary mb-2"></i>
+                        <p class="small text-muted mb-0">Secure your account with a strong password.</p>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input type="password" class="form-control" id="old_password" name="old_password"
+                            placeholder="Current" required>
+                        <label for="old_password">Current Password</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="password" class="form-control" id="new_password" name="new_password"
+                            placeholder="New" required minlength="6">
+                        <label for="new_password">New Password</label>
+                    </div>
+                    <div class="form-floating">
+                        <input type="password" class="form-control" id="confirm_password" name="confirm_password"
+                            placeholder="Confirm" required>
+                        <label for="confirm_password">Confirm New Password</label>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-4 pt-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary px-4 fw-bold">Update Password</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

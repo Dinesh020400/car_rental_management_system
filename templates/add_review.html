@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Review - Car Rental System{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('my_bookings') }}">My Bookings</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Add Review</li>
+        </ol>
+    </nav>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-star me-2"></i>Rate Your Experience</h4>
+                </div>
+                <div class="card-body p-4">
+                    {% if car %}
+                    <div class="mb-4 p-3 bg-light rounded">
+                        <div class="row align-items-center">
+                            <div class="col-md-3">
+                                <img src="{{ car.image }}" class="img-fluid rounded" alt="{{ car.make }} {{ car.model }}">
+                            </div>
+                            <div class="col-md-9">
+                                <h5>{{ car.make }} {{ car.model }} ({{ car.year }})</h5>
+                                <p class="text-muted mb-0">
+                                    <strong>Booking ID:</strong> #{{ booking.id[:8] }}<br>
+                                    <strong>Period:</strong> {{ booking.start_date }} to {{ booking.end_date }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <form method="POST">
+                        <div class="mb-4">
+                            <label class="form-label">Vehicle Rating</label>
+                            <div class="rating-input">
+                                <div class="star-rating" id="vehicleRating">
+                                    <i class="far fa-star" data-rating="1"></i>
+                                    <i class="far fa-star" data-rating="2"></i>
+                                    <i class="far fa-star" data-rating="3"></i>
+                                    <i class="far fa-star" data-rating="4"></i>
+                                    <i class="far fa-star" data-rating="5"></i>
+                                </div>
+                                <input type="hidden" name="rating" id="rating" value="0" required>
+                                <small class="text-muted d-block mt-2">Click to rate the vehicle</small>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Service Rating</label>
+                            <div class="rating-input">
+                                <div class="star-rating" id="serviceRating">
+                                    <i class="far fa-star" data-rating="1"></i>
+                                    <i class="far fa-star" data-rating="2"></i>
+                                    <i class="far fa-star" data-rating="3"></i>
+                                    <i class="far fa-star" data-rating="4"></i>
+                                    <i class="far fa-star" data-rating="5"></i>
+                                </div>
+                                <input type="hidden" name="service_rating" id="service_rating" value="0" required>
+                                <small class="text-muted d-block mt-2">Click to rate our service</small>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="comment" class="form-label">Your Review</label>
+                            <textarea class="form-control" id="comment" name="comment" rows="5" 
+                                      placeholder="Share your experience..." required></textarea>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-paper-plane me-2"></i>Submit Review
+                            </button>
+                            <a href="{{ url_for('my_bookings') }}" class="btn btn-outline-secondary">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.star-rating {
+    font-size: 2rem;
+    cursor: pointer;
+}
+
+.star-rating i {
+    color: #ddd;
+    transition: color 0.2s;
+    margin-right: 5px;
+}
+
+.star-rating i:hover,
+.star-rating i.active {
+    color: #ffc107;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Vehicle rating
+    const vehicleStars = document.querySelectorAll('#vehicleRating i');
+    const vehicleRatingInput = document.getElementById('rating');
+    
+    vehicleStars.forEach(star => {
+        star.addEventListener('click', function() {
+            const rating = this.getAttribute('data-rating');
+            vehicleRatingInput.value = rating;
+            
+            vehicleStars.forEach(s => {
+                if (s.getAttribute('data-rating') <= rating) {
+                    s.classList.remove('far');
+                    s.classList.add('fas', 'active');
+                } else {
+                    s.classList.remove('fas', 'active');
+                    s.classList.add('far');
+                }
+            });
+        });
+    });
+    
+    // Service rating
+    const serviceStars = document.querySelectorAll('#serviceRating i');
+    const serviceRatingInput = document.getElementById('service_rating');
+    
+    serviceStars.forEach(star => {
+        star.addEventListener('click', function() {
+            const rating = this.getAttribute('data-rating');
+            serviceRatingInput.value = rating;
+            
+            serviceStars.forEach(s => {
+                if (s.getAttribute('data-rating') <= rating) {
+                    s.classList.remove('far');
+                    s.classList.add('fas', 'active');
+                } else {
+                    s.classList.remove('fas', 'active');
+                    s.classList.add('far');
+                }
+            });
+        });
+    });
+});
+</script>
+{% endblock %}

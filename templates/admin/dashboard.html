@@ -1,0 +1,252 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - Car Rental System{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-4">
+    <!-- Welcome Hero -->
+    <div class="card border-0 shadow-lg mb-5 overflow-hidden position-relative">
+        <div class="position-absolute top-0 start-0 w-100 h-100"
+            style="background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); opacity: 0.95;">
+        </div>
+        <!-- Decorative pattern overlay -->
+        <div class="position-absolute top-0 start-0 w-100 h-100"
+            style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M54.627 0l.83.828-1.415 1.415-.828-.828-.828.828-1.415-1.415.828-.828-.828-.828 1.415-1.415.828.828.828-.828 1.415 1.415-.828.828zM22.485 0l.83.828-1.415 1.415-.828-.828-.828.828-1.415-1.415.828-.828-.828-.828 1.415-1.415.828.828.828-.828 1.415 1.415-.828.828zM0 22.485l.828.83-1.415 1.415-.828-.828-.828.828L-2.24 22.485l.828-.828-.828-.828 1.415-1.415.828.828.828-.828 1.415 1.415-.828.828zM0 54.627l.828.83-1.415 1.415-.828-.828-.828.828L-2.24 54.627l.828-.828-.828-.828 1.415-1.415.828.828.828-.828 1.415 1.415-.828.828zM54.627 60l.83-.828-1.415-1.415-.828.828-.828-.828-1.415 1.415.828.828-.828.828 1.415 1.415.828-.828.828.828 1.415-1.415.828-.828zM22.485 60l.83-.828-1.415-1.415-.828.828-.828-.828-1.415 1.415.828.828-.828.828 1.415 1.415.828-.828.828.828 1.415-1.415.828-.828zM32 11.414l3.172 3.172L32 17.758l-3.172-3.172 3.172-3.172zM32 43.414l3.172 3.172L32 49.758l-3.172-3.172 3.172-3.172zM43.414 32l3.172 3.172L43.414 38.344l-3.172-3.172 3.172-3.172zM11.414 32l3.172 3.172L11.414 38.344l-3.172-3.172 3.172-3.172z\' fill=\'%23ffffff\' fill-opacity=\'0.1\' fill-rule=\'evenodd\'/%3E%3C/svg%3E'); opacity: 0.4;">
+        </div>
+
+        <div class="card-body p-5 position-relative text-white fade-in-up">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div>
+                    <h6 class="text-white-50 text-uppercase letter-spacing-1 mb-2">Overview</h6>
+                    <h1 class="fw-bold mb-2">Admin Dashboard</h1>
+                    <p class="mb-0 text-white-50">Welcome back, {{ session.get('username') }}! Here's what's happening
+                        today.</p>
+                </div>
+                <div>
+                    <button class="btn btn-light text-primary fw-bold shadow-md pill-btn px-4"
+                        onclick="location.reload()">
+                        <i class="fas fa-sync-alt me-2"></i>Refresh Data
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="row g-4 mb-5">
+        <!-- Cars Stat -->
+        <div class="col-xl-4 col-md-6 fade-in-up">
+            <div class="card border-0 shadow-sm h-100 hover-up">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-primary bg-opacity-10 p-3 rounded-4 me-3 text-primary">
+                            <i class="fas fa-car fa-2x"></i>
+                        </div>
+                        <div>
+                            <p class="text-muted small text-uppercase fw-bold mb-1">Total Fleet</p>
+                            <h2 class="fw-bold mb-0">{{ cars|length }}</h2>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between pt-3 border-top">
+                        <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3">
+                            {{ cars|selectattr('available')|list|length }} Available
+                        </span>
+                        <a href="{{ url_for('admin_cars') }}"
+                            class="btn btn-sm btn-link text-decoration-none fw-bold">Manage <i
+                                class="fas fa-arrow-right ms-1"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Users Stat -->
+        <div class="col-xl-4 col-md-6 fade-in-up" style="animation-delay: 0.1s;">
+            <div class="card border-0 shadow-sm h-100 hover-up">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-info bg-opacity-10 p-3 rounded-4 me-3 text-info">
+                            <i class="fas fa-users fa-2x"></i>
+                        </div>
+                        <div>
+                            <p class="text-muted small text-uppercase fw-bold mb-1">Total Users</p>
+                            <h2 class="fw-bold mb-0">{{ users|length }}</h2>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between pt-3 border-top">
+                        <span class="badge bg-info bg-opacity-10 text-info rounded-pill px-3">
+                            {{ users|selectattr('is_admin')|list|length }} Admins
+                        </span>
+                        <a href="{{ url_for('admin_users') }}"
+                            class="btn btn-sm btn-link text-info text-decoration-none fw-bold">View Users <i
+                                class="fas fa-arrow-right ms-1"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Revenue Stat -->
+        <div class="col-xl-4 col-md-6 fade-in-up" style="animation-delay: 0.2s;">
+            <div class="card border-0 shadow-sm h-100 hover-up">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-warning bg-opacity-10 p-3 rounded-4 me-3 text-warning">
+                            <i class="fas fa-rupee-sign fa-2x"></i>
+                        </div>
+                        <div>
+                            <p class="text-muted small text-uppercase fw-bold mb-1">Total Revenue</p>
+                            <h2 class="fw-bold mb-0">₹{{ '{:,.0f}'.format(bookings|sum(attribute='total_price',
+                                start=0)) }}</h2>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between pt-3 border-top">
+                        <span class="badge bg-warning bg-opacity-10 text-warning rounded-pill px-3">
+                            Lifetime Earnings
+                        </span>
+                        <a href="{{ url_for('admin_analytics') }}"
+                            class="btn btn-sm btn-link text-warning text-decoration-none fw-bold">Analytics <i
+                                class="fas fa-arrow-right ms-1"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Quick Actions -->
+        <div class="col-lg-4 mb-4 fade-in-up" style="animation-delay: 0.3s;">
+            <h5 class="fw-bold mb-3 ms-1">Quick Actions</h5>
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="list-group list-group-flush">
+                    <a href="{{ url_for('admin_add_car') }}"
+                        class="list-group-item list-group-item-action p-4 d-flex align-items-center border-0 border-bottom">
+                        <div class="bg-primary bg-opacity-10 p-3 rounded-circle me-3">
+                            <i class="fas fa-plus text-primary"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-1">Add New Vehicle</h6>
+                            <small class="text-muted">List a new car in the fleet</small>
+                        </div>
+                        <i class="fas fa-chevron-right ms-auto text-muted"></i>
+                    </a>
+                    <a href="{{ url_for('admin_analytics') }}"
+                        class="list-group-item list-group-item-action p-4 d-flex align-items-center border-0">
+                        <div class="bg-success bg-opacity-10 p-3 rounded-circle me-3">
+                            <i class="fas fa-chart-bar text-success"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-1">View Analytics</h6>
+                            <small class="text-muted">Check detailed reports</small>
+                        </div>
+                        <i class="fas fa-chevron-right ms-auto text-muted"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Bookings Table -->
+        <div class="col-lg-8 fade-in-up" style="animation-delay: 0.4s;">
+            <div class="d-flex justify-content-between align-items-center mb-3 px-1">
+                <h5 class="fw-bold mb-0">Recent Activity</h5>
+                <a href="{{ url_for('admin_bookings') }}" class="btn btn-link text-decoration-none fw-bold">View All <i
+                        class="fas fa-arrow-right ms-1"></i></a>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="border-0 py-3 ps-4 text-muted small text-uppercase">Booking ID</th>
+                                <th class="border-0 py-3 text-muted small text-uppercase">Vehicle</th>
+                                <th class="border-0 py-3 text-muted small text-uppercase">Customer</th>
+                                <th class="border-0 py-3 text-muted small text-uppercase">Status</th>
+                                <th class="border-0 py-3 pe-4 text-end text-muted small text-uppercase">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if bookings %}
+                            {% for booking in bookings[:5] %}
+                            {% set user_obj = namespace(found=none) %}
+                            {% for u in users %}
+                            {% if u._id|string == booking.user_id|string %}
+                            {% set user_obj.found = u %}
+                            {% endif %}
+                            {% endfor %}
+                            <tr>
+                                <td class="ps-4">
+                                    <span class="font-monospace text-muted small">#{{ booking.id[:8] }}</span>
+                                </td>
+                                <td>
+                                    {% if booking.car %}
+                                    <div class="d-flex align-items-center">
+                                        <div class="rounded-3 bg-light d-flex align-items-center justify-content-center me-3"
+                                            style="width: 40px; height: 40px;">
+                                            <i class="fas fa-car-side text-primary"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold text-dark">{{ booking.car.make }} {{ booking.car.model }}</div>
+                                            <div class="small text-muted">{{ booking.car.year }}</div>
+                                        </div>
+                                    </div>
+                                    {% else %}
+                                    <span class="text-muted">Unknown Vehicle</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="rounded-circle bg-light d-flex align-items-center justify-content-center me-2"
+                                            style="width: 32px; height: 32px;">
+                                            <i class="fas fa-user small text-secondary"></i>
+                                        </div>
+                                        <span class="fw-bold text-dark">{{ user_obj.found.username if user_obj.found
+                                            else 'Visitor' }}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if booking.status == 'confirmed' %}
+                                    <span
+                                        class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2">Confirmed</span>
+                                    {% elif booking.status == 'pending' %}
+                                    <span
+                                        class="badge bg-warning bg-opacity-10 text-warning rounded-pill px-3 py-2">Pending</span>
+                                    {% elif booking.status == 'cancelled' %}
+                                    <span
+                                        class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-3 py-2">Cancelled</span>
+                                    {% else %}
+                                    <span
+                                        class="badge bg-secondary bg-opacity-10 text-secondary rounded-pill px-3 py-2">{{
+                                        booking.status|title }}</span>
+                                    {% endif %}
+                                </td>
+                                <td class="pe-4 text-end">
+                                    <span class="fw-bold text-dark">₹{{ '{:,.0f}'.format(booking.total_price) }}</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center py-5">
+                                    <div class="text-muted mb-3"><i class="fas fa-inbox fa-3x opacity-25"></i></div>
+                                    <p class="text-muted mb-0">No bookings found yet.</p>
+                                </td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .hover-up {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .hover-up:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg) !important;
+    }
+</style>
+{% endblock %}

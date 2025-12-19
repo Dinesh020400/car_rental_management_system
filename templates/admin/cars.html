@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Cars - Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4 fade-in-up">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1">
+                    <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}"
+                            class="text-decoration-none">Dashboard</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Vehicles</li>
+                </ol>
+            </nav>
+            <h2 class="fw-bold mb-0">Manage Fleet</h2>
+            <p class="text-muted text-truncate" style="max-width: 500px;">View, Add, Edit or Remove vehicles from your
+                global inventory.</p>
+        </div>
+        <a href="{{ url_for('admin_add_car') }}" class="btn btn-primary fw-bold shadow-sm pill-btn px-4 py-2">
+            <i class="fas fa-plus-circle me-2"></i>Add New Car
+        </a>
+    </div>
+
+    <!-- Listings Card -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden fade-in-up" style="animation-delay: 0.1s;">
+        <div class="card-body p-0">
+            {% if cars %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light border-bottom">
+                        <tr>
+                            <th class="border-0 py-3 ps-4 text-muted small text-uppercase">Vehicle Details</th>
+                            <th class="border-0 py-3 text-muted small text-uppercase">Year</th>
+                            <th class="border-0 py-3 text-muted small text-uppercase">Price/Day</th>
+                            <th class="border-0 py-3 text-muted small text-uppercase">Status</th>
+                            <th class="border-0 py-3 pe-4 text-end text-muted small text-uppercase">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for car in cars %}
+                        <tr>
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="position-relative me-3">
+                                        <img src="/static/car_images/{{ car.image.split('/')[-1] if car.image else 'default_car.jpg' }}"
+                                            alt="{{ car.make }}" class="rounded-3 shadow-sm object-fit-cover" width="60"
+                                            height="60">
+                                        {% if not car.available %}
+                                        <div
+                                            class="position-absolute top-0 start-0 w-100 h-100 bg-white bg-opacity-75 d-flex align-items-center justify-content-center rounded-3">
+                                            <i class="fas fa-lock text-secondary"></i>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <h6 class="fw-bold text-dark mb-0">{{ car.make }} {{ car.model }}</h6>
+                                        <small class="text-muted text-uppercase" style="font-size: 0.75rem;">ID: {{
+                                            car.id }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark border fw-normal">{{ car.year }}</span>
+                            </td>
+                            <td>
+                                <span class="fw-bold text-dark">₹{{ car.price_inr }}</span>
+                            </td>
+                            <td>
+                                {% if car.available %}
+                                <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2">
+                                    <i class="fas fa-check-circle me-1"></i> Available
+                                </span>
+                                {% else %}
+                                <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-3 py-2">
+                                    <i class="fas fa-times-circle me-1"></i> Unavailable
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td class="pe-4 text-end">
+                                <div class="btn-group shadow-sm rounded-3" role="group">
+                                    <a href="{{ url_for('car_details', car_id=car.id) }}"
+                                        class="btn btn-outline-light text-dark border-0 bg-white" title="View Details"
+                                        target="_blank">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{{ url_for('admin_edit_car', car_id=car.id) }}"
+                                        class="btn btn-outline-light text-primary border-0 bg-white"
+                                        title="Edit Vehicle">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{{ url_for('admin_delete_car', car_id=car.id) }}"
+                                        class="btn btn-outline-light text-danger border-0 bg-white"
+                                        title="Delete Vehicle"
+                                        onclick="return confirm('Are you sure you want to remove {{ car.make }} {{ car.model }} from the fleet? This action cannot be undone.');">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <div class="mb-3 text-muted opacity-25">
+                    <i class="fas fa-car-side fa-4x"></i>
+                </div>
+                <h3>Your fleet is empty</h3>
+                <p class="text-muted">Start by adding your first vehicle to the inventory.</p>
+                <a href="{{ url_for('admin_add_car') }}" class="btn btn-primary mt-3 px-4">
+                    <i class="fas fa-plus me-2"></i>Add Vehicle
+                </a>
+            </div>
+            {% endif %}
+        </div>
+        <div class="card-footer bg-white border-top border-light p-3 text-center">
+            <small class="text-muted">Showing {{ cars|length }} vehicles in inventory</small>
+        </div>
+    </div>
+</div>
+
+<style>
+    .table> :not(caption)>*>* {
+        padding: 1rem 0.5rem;
+    }
+
+    .btn-group .btn:hover {
+        background-color: #f8f9fa !important;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Profile - Car Rental System{% endblock %}
+
+{% block content %}
+<div class="row g-5 py-4">
+    <!-- Left Sidebar: Navigation -->
+    <div class="col-lg-3">
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden sticky-top" style="top: 100px;">
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    <a href="{{ url_for('profile') }}"
+                        class="list-group-item list-group-item-action border-0 py-3 px-4 d-flex align-items-center">
+                        <i class="fas fa-user-circle me-3 text-muted"></i>
+                        <span class="text-dark">My Profile</span>
+                    </a>
+                    <a href="{{ url_for('edit_profile') }}"
+                        class="list-group-item list-group-item-action active border-0 py-3 px-4 d-flex align-items-center">
+                        <i class="fas fa-edit me-3 fa-lg"></i>
+                        <span class="fw-bold">Edit Profile</span>
+                    </a>
+                    {% if not session.get('is_admin') %}
+                    <a href="{{ url_for('my_bookings') }}"
+                        class="list-group-item list-group-item-action border-0 py-3 px-4 d-flex align-items-center">
+                        <i class="fas fa-car me-3 text-muted"></i>
+                        <span class="text-dark">My Bookings</span>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card-footer bg-light border-0 p-4 text-center">
+                <small class="text-muted d-block">Account Settings</small>
+                <span class="fw-bold text-dark">Manage your info</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Edit Form -->
+    <div class="col-lg-9 fade-in-up">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold mb-0">Update Information</h2>
+            <a href="{{ url_for('profile') }}" class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-arrow-left me-2"></i>Back to Profile
+            </a>
+        </div>
+
+        <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="card-body p-5">
+                <form method="POST" action="{{ url_for('edit_profile') }}" class="needs-validation" novalidate>
+                    <div class="row">
+
+
+                        <!-- Form Fields -->
+                        <div class="col-md-8 mx-auto">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control bg-light" id="username"
+                                    value="{{ user.username }}" readonly disabled>
+                                <label for="username">Username</label>
+                                <div class="form-text"><i class="fas fa-lock me-1"></i> Username cannot be changed.
+                                </div>
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                <input type="email" class="form-control" id="email" name="email"
+                                    value="{{ user.email }}" required placeholder="name@example.com">
+                                <label for="email">Email Address</label>
+                                {% if not user.email_verified %}
+                                <div class="form-text text-warning"><i class="fas fa-exclamation-triangle me-1"></i>
+                                    Please verify your email after updating.</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="form-floating mb-4">
+                                <input type="tel" class="form-control" id="phone" name="phone" value="{{ user.phone }}"
+                                    placeholder="Phone" minlength="10" maxlength="10" pattern="[0-9]{10}"
+                                    title="Please enter exactly 10 digits"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)">
+                                <label for="phone">Phone Number</label>
+                            </div>
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <a href="{{ url_for('profile') }}" class="btn btn-light px-4 py-3 fw-bold">Cancel</a>
+                                <button type="submit" class="btn btn-primary px-5 py-3 fw-bold shadow-md">
+                                    <i class="fas fa-save me-2"></i> Save Changes
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

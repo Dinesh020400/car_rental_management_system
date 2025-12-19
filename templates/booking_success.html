@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+
+{% block title %}Booking Confirmed - Car Rental System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-5">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-lg rounded-4 overflow-hidden fade-in-up">
+            <!-- Header -->
+            <div class="card-header bg-white border-bottom-0 text-center pt-5 pb-0">
+                <div class="mb-4">
+                    <div class="icon-box bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center shadow-lg"
+                        style="width: 80px; height: 80px;">
+                        <i class="fas fa-check fa-3x"></i>
+                    </div>
+                </div>
+                <h2 class="fw-bold text-success">Booking Confirmed!</h2>
+                <p class="text-muted">Booking Reference: <span class="fw-bold text-dark">#{{ booking.id[:8].upper()
+                        }}</span></p>
+            </div>
+
+            <div class="card-body p-4 p-md-5">
+                <!-- Car & Main Info -->
+                <div class="card bg-light border-0 rounded-3 mb-4">
+                    <div class="card-body p-4">
+                        <div class="row align-items-center">
+                            <div class="col-md-4 mb-3 mb-md-0 text-center">
+                                <img src="/static/car_images/{{ booking.car.image.split('/')[-1] if booking.car and booking.car.image else 'default_car.jpg' }}"
+                                    class="img-fluid rounded-3 shadow-sm"
+                                    style="max-height: 150px; width: 100%; object-fit: cover;" alt="Car Image"
+                                    onerror="this.src='/static/car_images/default_car.jpg'">
+                            </div>
+                            <div class="col-md-8">
+                                <h4 class="fw-bold mb-1">{{ booking.car.make }} {{ booking.car.model }}</h4>
+                                <span class="badge bg-white text-dark border mb-3">{{ booking.car.year }} Model</span>
+
+                                <div class="row g-3">
+                                    <div class="col-6">
+                                        <small class="text-muted d-block text-uppercase fw-bold"
+                                            style="font-size: 0.7rem;">Total Paid</small>
+                                        <span class="fs-5 fw-bold text-primary">₹{{ "%.2f"|format(booking.total_price)
+                                            }}</span>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="text-muted d-block text-uppercase fw-bold"
+                                            style="font-size: 0.7rem;">Payment Method</small>
+                                        <span class="fw-bold text-dark">{{ payment.payment_method if payment else 'Card'
+                                            }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Location Details Grid -->
+                <div class="row g-4 mb-5">
+                    <!-- Pickup Column -->
+                    <div class="col-md-6">
+                        <div
+                            class="p-4 rounded-4 bg-primary bg-opacity-10 h-100 border border-primary border-opacity-25">
+                            <div class="d-flex align-items-center mb-3">
+                                <span
+                                    class="bg-white text-primary rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                                    style="width: 40px; height: 40px;">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </span>
+                                <span
+                                    class="ms-3 text-uppercase fw-bold text-primary small letter-spacing-1">Pickup</span>
+                            </div>
+
+                            <h6 class="fw-bold text-dark mb-1">
+                                {% for loc in locations %}
+                                {% if loc.id|string == booking.pickup_location|string %}
+                                {{ loc.name }}
+                                {% endif %}
+                                {% endfor %}
+                            </h6>
+                            {% for loc in locations %}
+                            {% if loc.id|string == booking.pickup_location|string %}
+                            <small class="text-muted d-block mb-3">{{ loc.address }}</small>
+                            {% endif %}
+                            {% endfor %}
+
+                            <div
+                                class="d-flex align-items-center text-dark bg-white px-3 py-2 rounded-3 shadow-sm border border-light">
+                                <i class="far fa-calendar-alt text-muted me-2"></i>
+                                <span class="fw-semibold me-3">{{ booking.start_date }}</span>
+                                <i class="far fa-clock text-muted me-2"></i>
+                                <span class="fw-semibold">{{ booking.pickup_time }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Drop-off Column -->
+                    <div class="col-md-6">
+                        <div class="p-4 rounded-4 bg-danger bg-opacity-10 h-100 border border-danger border-opacity-25">
+                            <div class="d-flex align-items-center mb-3">
+                                <span
+                                    class="bg-white text-danger rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                                    style="width: 40px; height: 40px;">
+                                    <i class="fas fa-flag-checkered"></i>
+                                </span>
+                                <span
+                                    class="ms-3 text-uppercase fw-bold text-danger small letter-spacing-1">Drop-off</span>
+                            </div>
+
+                            <h6 class="fw-bold text-dark mb-1">
+                                {% for loc in locations %}
+                                {% if loc.id|string == booking.drop_location|string %}
+                                {{ loc.name }}
+                                {% endif %}
+                                {% endfor %}
+                            </h6>
+                            {% for loc in locations %}
+                            {% if loc.id|string == booking.drop_location|string %}
+                            <small class="text-muted d-block mb-3">{{ loc.address }}</small>
+                            {% endif %}
+                            {% endfor %}
+
+                            <div
+                                class="d-flex align-items-center text-dark bg-white px-3 py-2 rounded-3 shadow-sm border border-light">
+                                <i class="far fa-calendar-check text-muted me-2"></i>
+                                <span class="fw-semibold me-3">{{ booking.end_date }}</span>
+                                <i class="far fa-clock text-muted me-2"></i>
+                                <span class="fw-semibold">{{ booking.drop_time }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Actions -->
+                <div class="d-flex flex-column flex-md-row gap-3 justify-content-center border-top pt-4">
+                    <a href="{{ url_for('download_invoice', booking_id=booking.id) }}"
+                        class="btn btn-primary px-4 fw-bold">
+                        <i class="fas fa-file-download me-2"></i>Download Receipt
+                    </a>
+                    <a href="{{ url_for('my_bookings') }}" class="btn btn-outline-secondary px-4 fw-bold">
+                        View My Bookings
+                    </a>
+                </div>
+            </div>
+
+            <div class="card-footer bg-light text-center py-3 border-0">
+                <small class="text-muted">Transaction ID: {{ payment.transaction_id if payment else 'N/A' }}</small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

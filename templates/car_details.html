@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+
+{% block title %}Rent {{ car.make }} {{ car.model }} - Car Rental System{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <nav aria-label="breadcrumb" class="mb-5 fade-in-up">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}" class="text-decoration-none fw-bold">Home</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">{{ car.make }} {{ car.model }}</li>
+        </ol>
+    </nav>
+
+    <div class="row g-5">
+        <!-- Left Column: Image and Specs -->
+        <div class="col-lg-8 fade-in-up" style="animation-delay: 0.1s;">
+            <div class="card border-0 shadow-lg overflow-hidden position-relative mb-5" style="border-radius: 20px;">
+                <div style="height: 500px; overflow: hidden;">
+                    <img src="/static/car_images/{{ car.image.split('/')[-1] if car.image else 'default_car.jpg' }}"
+                        class="w-100 h-100 object-fit-cover" style="object-fit: cover;"
+                        alt="{{ car.make }} {{ car.model }}">
+                </div>
+                <div class="position-absolute top-0 end-0 m-4">
+                    {% if car.available %}
+                    <span class="badge bg-success px-4 py-2 rounded-pill shadow-sm"><i
+                            class="fas fa-check-circle me-2"></i>Available</span>
+                    {% else %}
+                    <span class="badge bg-danger px-4 py-2 rounded-pill shadow-sm"><i
+                            class="fas fa-times-circle me-2"></i>Not Available</span>
+                    {% endif %}
+                </div>
+                <div class="position-absolute bottom-0 start-0 w-100 p-4"
+                    style="background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%);">
+                    <h1 class="display-4 fw-bold text-white mb-0">{{ car.make }} {{ car.model }}</h1>
+                    <p class="text-white-50 fs-5 mb-0">{{ car.year }} Model</p>
+                </div>
+            </div>
+
+            <h3 class="fw-bold mb-4">Vehicle Specifications</h3>
+            <div class="row g-3 mb-5">
+                <div class="col-md-3 col-6">
+                    <div class="card bg-light border-0 h-100 text-center py-4">
+                        <i class="fas fa-tachometer-alt fa-2x text-primary mb-3"></i>
+                        <small class="text-muted text-uppercase fw-bold">Mileage</small>
+                        <h6 class="fw-bold mb-0">12k km</h6>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="card bg-light border-0 h-100 text-center py-4">
+                        <i class="fas fa-gas-pump fa-2x text-primary mb-3"></i>
+                        <small class="text-muted text-uppercase fw-bold">Fuel</small>
+                        <h6 class="fw-bold mb-0">Petrol</h6>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="card bg-light border-0 h-100 text-center py-4">
+                        <i class="fas fa-cogs fa-2x text-primary mb-3"></i>
+                        <small class="text-muted text-uppercase fw-bold">Transmission</small>
+                        <h6 class="fw-bold mb-0">Auto</h6>
+                    </div>
+                </div>
+
+            </div>
+
+            {% if reviews %}
+            <div class="reviews-section mt-5">
+                <div class="d-flex align-items-center justify-content-between mb-4">
+                    <h3 class="fw-bold mb-0">Customer Reviews</h3>
+                    {% if review_stats %}
+                    <div class="d-flex align-items-center">
+                        <span class="fs-4 fw-bold me-2">{{ review_stats.average_rating }}</span>
+                        <div class="text-warning">
+                            {% for i in range(1, 6) %}
+                            <i class="{% if i <= review_stats.average_rating %}fas{% else %}far{% endif %} fa-star"></i>
+                            {% endfor %}
+                        </div>
+                        <span class="text-muted ms-2">({{ review_stats.total_reviews }})</span>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="d-flex flex-column gap-3">
+                    {% for review in reviews %}
+                    <div class="card border-0 shadow-sm rounded-4">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between mb-3">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold"
+                                        style="width: 48px; height: 48px;">
+                                        {{ review.user_name[:1] }}
+                                    </div>
+                                    <div>
+                                        <h6 class="fw-bold mb-0">{{ review.user_name }}</h6>
+                                        <small class="text-muted">{{ review.created_at.strftime('%B %d, %Y') if
+                                            review.created_at else 'Verified User' }}</small>
+                                    </div>
+                                </div>
+                                <div class="text-warning small">
+                                    {% for i in range(1, 6) %}
+                                    <i class="{% if i <= review.rating %}fas{% else %}far{% endif %} fa-star"></i>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <p class="text-muted mb-0">{{ review.comment }}</p>
+                            {% if review.verified_booking %}
+                            <div class="mt-2 text-success small fw-bold"><i class="fas fa-check-circle me-1"></i>
+                                Verified Booking</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Right Column: Booking Card -->
+        <div class="col-lg-4 fade-in-up" style="animation-delay: 0.2s;">
+            <div class="card border-0 shadow-lg position-sticky" style="top: 100px; border-radius: 20px;">
+                <div class="card-body p-4">
+                    <div class="mb-4">
+                        <p class="text-muted text-uppercase fw-bold mb-1 small">Daily Rate</p>
+                        <div class="d-flex align-items-end">
+                            <h2 class="fw-bold text-primary mb-0 me-2 display-6">₹{{ car.price_inr }}</h2>
+                            <span class="text-muted h5 mb-2">/ day</span>
+                        </div>
+                    </div>
+
+                    <ul class="list-unstyled mb-4 text-muted">
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Best Price Guarantee</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Free Cancellation (24h)
+                        </li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>24/7 Support Included</li>
+                    </ul>
+
+                    <div class="d-grid gap-3">
+                        {% if car.available %}
+                        {% if session.get('user_id') %}
+                        <a href="{{ url_for('book_car', car_id=car._id) }}"
+                            class="btn btn-primary btn-lg fw-bold py-3 shadow-md">
+                            Book Now <i class="fas fa-arrow-right ms-2"></i>
+                        </a>
+                        {% else %}
+                        <a href="{{ url_for('login') }}" class="btn btn-outline-primary btn-lg fw-bold py-3">
+                            Login to Book
+                        </a>
+                        {% endif %}
+                        {% else %}
+                        <button class="btn btn-secondary btn-lg py-3" disabled>
+                            Not Available
+                        </button>
+                        {% endif %}
+
+                        <a href="tel:+919876543210" class="btn btn-light fw-bold">
+                            <i class="fas fa-phone-alt me-2"></i>Call Support
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Similar Cars (Simplified) -->
+    {% if similar_cars and similar_cars|length > 0 %}
+    <div class="mt-5 pt-5 fade-in-up" style="animation-delay: 0.3s;">
+        <h3 class="fw-bold mb-4">You Might Also Like</h3>
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for similar_car in similar_cars %}
+            <div class="col">
+                <a href="{{ url_for('car_details', car_id=similar_car.id) }}" class="text-decoration-none">
+                    <div class="card h-100 border-0 shadow-sm transition-hover">
+                        <img src="/static/car_images/{{ similar_car.image.split('/')[-1] }}" class="card-img-top"
+                            alt="{{ similar_car.make }}" style="height: 200px; object-fit: cover;">
+                        <div class="card-body">
+                            <h6 class="fw-bold text-dark mb-1">{{ similar_car.make }} {{ similar_car.model }}</h6>
+                            <p class="text-primary fw-bold mb-0">₹{{ similar_car.price_inr }} <span
+                                    class="text-muted ms-1 small">/day</span></p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

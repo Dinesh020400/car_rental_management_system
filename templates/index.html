@@ -1,0 +1,241 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Car Rental System{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section text-center fade-in-up">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <h1 class="display-4 fw-bold mb-4 text-white">Find Your Perfect Ride</h1>
+            <p class="lead mb-5 text-white opacity-90">Discover our premium selection of vehicles at competitive prices.
+                Book easily and hit the road in style with our seamless rental experience.</p>
+            <div class="d-flex gap-3 justify-content-center flex-wrap">
+                {% if not session.get('user_id') %}
+                <a href="{{ url_for('register') }}" class="btn btn-light text-primary btn-lg px-5 pill-btn shadow-lg">
+                    <i class="fas fa-user-plus me-2"></i>Get Started
+                </a>
+                <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-lg px-5 pill-btn">
+                    <i class="fas fa-sign-in-alt me-2"></i>Login
+                </a>
+                {% else %}
+                <a href="#available-cars" class="btn btn-light text-primary btn-lg px-5 pill-btn shadow-lg">
+                    <i class="fas fa-car me-2"></i>Browse Fleet
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filter Section -->
+<div class="row justify-content-center mb-5">
+    <div class="col-xl-10">
+        <div class="search-container fade-in-up p-4" style="animation-delay: 0.2s;">
+            <div class="d-flex align-items-center mb-4 pb-3 border-bottom">
+                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3"
+                    style="width: 40px; height: 40px;">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h5 class="fw-bold text-dark mb-0">Find Your Vehicle</h5>
+            </div>
+
+            <form action="{{ url_for('index') }}" method="get">
+                <div class="row g-3">
+                    <div class="col-lg-4 col-md-6">
+                        <label for="search" class="form-label text-muted small fw-bold text-uppercase">Keyword</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i
+                                    class="fas fa-search text-muted"></i></span>
+                            <input type="text" class="form-control bg-light border-start-0 py-2" id="search"
+                                name="search" placeholder="Enter make or model..."
+                                value="{{ request.args.get('search', '') }}">
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6">
+                        <label for="make" class="form-label text-muted small fw-bold text-uppercase">Make</label>
+                        <select class="form-select bg-light py-2" id="make" name="make">
+                            <option value="">All Brands</option>
+                            {% set makes = cars|map(attribute='make')|unique|sort %}
+                            {% for make in makes %}
+                            <option value="{{ make }}" {% if request.args.get('make')==make %}selected{% endif %}>{{
+                                make }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6">
+                        <label for="type" class="form-label text-muted small fw-bold text-uppercase">Vehicle
+                            Type</label>
+                        <select class="form-select bg-light py-2" id="type" name="type">
+                            <option value="">Any Type</option>
+                            <option value="car" {% if request.args.get('type')=='car' %}selected{% endif %}>Cars
+                            </option>
+                            <option value="bike" {% if request.args.get('type')=='bike' %}selected{% endif %}>Bikes
+                            </option>
+                            <option value="scooter" {% if request.args.get('type')=='scooter' %}selected{% endif %}>
+                                Scooters</option>
+                        </select>
+                    </div>
+
+                    <div class="col-lg-2 col-md-6 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">
+                            Search
+                        </button>
+                    </div>
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-12 d-flex align-items-center">
+                        <label class="form-label text-muted small fw-bold text-uppercase me-3 mb-0">Sort By:</label>
+                        <div class="d-flex gap-2">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="sort" id="sortPriceLow"
+                                    value="price_asc" {% if request.args.get('sort')=='price_asc' %}checked{% endif %}>
+                                <label class="form-check-label small" for="sortPriceLow">Price: Low to High</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="sort" id="sortPriceHigh"
+                                    value="price_desc" {% if request.args.get('sort')=='price_desc' %}checked{% endif
+                                    %}>
+                                <label class="form-check-label small" for="sortPriceHigh">Price: High to Low</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="sort" id="sortNewest"
+                                    value="year_desc" {% if request.args.get('sort')=='year_desc' %}checked{% endif %}>
+                                <label class="form-check-label small" for="sortNewest">Newest First</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Available Cars Section -->
+<div id="available-cars" class="py-4">
+    <div class="d-flex justify-content-between align-items-end mb-4 px-2">
+        <div>
+            <h6 class="text-primary fw-bold text-uppercase letter-spacing-1 mb-1">Our Fleet</h6>
+            <h2 class="fw-bold mb-0">Available Vehicles</h2>
+        </div>
+        <span class="badge bg-primary rounded-pill px-3 py-2">
+            {{ cars|selectattr('available', 'equalto', true)|list|length }} Available
+        </span>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for car in cars %}
+        {% if car.available %}
+        <div class="col d-flex align-items-stretch fade-in-up" style="animation-delay: 0.{{ loop.index }}s">
+            <div class="card w-100 border-0 shadow-sm transition-hover">
+                <div class="position-relative overflow-hidden">
+                    <div style="height: 220px; overflow: hidden;">
+                        <img src="/static/car_images/{{ car.image.split('/')[-1] if car.image else 'default_car.jpg' }}"
+                            class="w-100 h-100" style="object-fit: cover; transition: transform 0.5s ease;"
+                            alt="{{ car.make }} {{ car.model }}">
+                    </div>
+                    <div class="car-price-badge">₹{{ car.price_inr }}/day</div>
+                </div>
+                <div class="card-body d-flex flex-column p-4">
+                    <div class="mb-3">
+                        <h5 class="card-title fw-bold mb-1">{{ car.make }} {{ car.model }}</h5>
+                    </div>
+
+                    <div class="row g-2 mb-4">
+                        <div class="col-6">
+                            <div
+                                class="d-flex align-items-center justify-content-center text-muted small bg-light rounded p-2 h-100">
+                                <i class="fas fa-gas-pump me-2 text-primary"></i>
+                                <span>Petrol</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div
+                                class="d-flex align-items-center justify-content-center text-muted small bg-light rounded p-2 h-100">
+                                <i class="fas fa-cogs me-2 text-primary"></i>
+                                <span>Auto</span>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div
+                                class="d-flex align-items-center justify-content-center text-muted small bg-light rounded p-2 h-100">
+                                <i class="fas fa-calendar-alt me-2 text-primary"></i>
+                                <span>{{ car.year }} Model</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-auto pt-3 border-top">
+                        <div class="d-grid gap-2">
+                            {% if session.get('user_id') %}
+                            <a href="{{ url_for('book_car', car_id=car._id) }}" class="btn btn-primary fw-bold">
+                                Book Now
+                            </a>
+                            {% else %}
+                            <a href="{{ url_for('login') }}" class="btn btn-outline-primary fw-bold">
+                                Login to Book
+                            </a>
+                            {% endif %}
+                            <a href="{{ url_for('car_details', car_id=car._id) }}"
+                                class="btn btn-link text-decoration-none text-muted small">
+                                View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+
+    {% if cars|selectattr('available', 'equalto', true)|list|length == 0 %}
+    <div class="text-center py-5">
+        <div class="mb-3 text-muted display-1"><i class="fas fa-car-crash"></i></div>
+        <h3>No vehicles found</h3>
+        <p class="text-muted">Try adjusting your search criteria</p>
+        <a href="{{ url_for('index') }}" class="btn btn-primary mt-3">Reset Filters</a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Features Section -->
+<div class="row mt-5 pt-5 mb-5">
+    <div class="col-12 text-center mb-5">
+        <h6 class="text-primary fw-bold text-uppercase letter-spacing-1 mb-2">Why Choose Us</h6>
+        <h2 class="fw-bold display-6">Premium Service, Standard Price</h2>
+        <p class="text-muted w-75 mx-auto">We provide the best car rental experience with verified vehicles and
+            transparent pricing.</p>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 border-0 p-4 text-center hover-up shadow-sm">
+            <div class="feature-icon-box">
+                <i class="fas fa-car-side"></i>
+            </div>
+            <h4 class="fw-bold mb-3">Wide Selection</h4>
+            <p class="text-muted mb-0">Choose from luxury sedans, energetic hatchbacks, and spacious SUVs.</p>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 border-0 p-4 text-center hover-up shadow-sm">
+            <div class="feature-icon-box">
+                <i class="fas fa-tag"></i>
+            </div>
+            <h4 class="fw-bold mb-3">Best Rates</h4>
+            <p class="text-muted mb-0">Competitive daily rates with no hidden charges or surprise fees.</p>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 border-0 p-4 text-center hover-up shadow-sm">
+            <div class="feature-icon-box">
+                <i class="fas fa-headset"></i>
+            </div>
+            <h4 class="fw-bold mb-3">24/7 Support</h4>
+            <p class="text-muted mb-0">Our dedicated support team is available round the clock to assist you.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

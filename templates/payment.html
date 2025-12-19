@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+
+{% block title %}Payment - Car Rental System{% endblock %}
+
+{% block content %}
+<div class="row g-5 py-4">
+    <!-- Left Column: Order Summary (Sticky) -->
+    <div class="col-lg-4 order-lg-last fade-in-up" style="animation-delay: 0.2s;">
+        <div class="card border-0 shadow-lg position-sticky" style="top: 100px; border-radius: 16px;">
+            <div class="card-header bg-white border-0 pt-4 px-4 pb-0">
+                <h5 class="fw-bold mb-0 text-muted small text-uppercase letter-spacing-1">Order Overview</h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="d-flex mb-4">
+                    <img src="/static/car_images/{{ booking.car.image.split('/')[-1] if booking.car.image else 'default_car.jpg' }}"
+                        class="rounded-3 shadow-sm object-fit-cover" width="80" height="80"
+                        alt="{{ booking.car.make }}">
+                    <div class="ms-3">
+                        <h6 class="fw-bold mb-1">{{ booking.car.make }} {{ booking.car.model }}</h6>
+                        <span class="badge bg-light text-dark border">{{ booking.car.year }}</span>
+                    </div>
+                </div>
+
+                <div class="price-breakdown mb-4">
+                    <div class="d-flex justify-content-between mb-2 small text-muted">
+                        <span>Pickup</span>
+                        <span class="text-dark fw-bold">{{ booking.start_date }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2 small text-muted">
+                        <span>Return</span>
+                        <span class="text-dark fw-bold">{{ booking.end_date }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2 small text-muted">
+                        <span>Duration</span>
+                        <span class="text-dark fw-bold">{{ booking.total_days }} days</span>
+                    </div>
+                    <hr class="border-secondary border-opacity-10 my-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="fw-bold text-dark">Total Amount</span>
+                        <span class="fs-4 fw-bold text-primary">₹{{ "%.2f"|format(booking.total_price) }}</span>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center justify-content-center text-muted small">
+                    <i class="fas fa-lock me-2"></i> Secure Payment
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Payment Options -->
+    <div class="col-lg-8 fade-in-up">
+        <h2 class="fw-bold mb-4">Choose Payment Method</h2>
+
+        <form id="paymentForm" method="POST" action="{{ url_for('process_payment', booking_id=booking.id) }}">
+            <div class="row g-3 mb-4">
+                {% for method_key, method_name in payment_methods.items() %}
+                <div class="col-md-4">
+                    <input type="radio" name="payment_method" value="{{ method_key }}" id="payment_{{ method_key }}"
+                        class="btn-check" required>
+                    <label class="card h-100 border-0 shadow-sm payment-card cursor-pointer"
+                        for="payment_{{ method_key }}">
+                        <div class="card-body text-center p-4">
+                            {% if method_key == 'UPI' %}
+                            <div
+                                class="icon-box bg-warning bg-opacity-10 text-warning mx-auto mb-3 rounded-circle p-3 d-inline-block">
+                                <i class="fas fa-mobile-alt fa-2x"></i>
+                            </div>
+                            {% elif method_key == 'CARD' %}
+                            <div
+                                class="icon-box bg-primary bg-opacity-10 text-primary mx-auto mb-3 rounded-circle p-3 d-inline-block">
+                                <i class="fas fa-credit-card fa-2x"></i>
+                            </div>
+                            {% elif method_key == 'WALLET' %}
+                            <div
+                                class="icon-box bg-success bg-opacity-10 text-success mx-auto mb-3 rounded-circle p-3 d-inline-block">
+                                <i class="fas fa-wallet fa-2x"></i>
+                            </div>
+                            {% endif %}
+                            <h6 class="fw-bold mb-0 text-dark">{{ method_name }}</h6>
+                        </div>
+                    </label>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="alert alert-light border shadow-sm d-flex align-items-start" role="alert">
+                <i class="fas fa-info-circle text-primary mt-1 me-3 fs-5"></i>
+                <div>
+                    <strong>Demo Mode:</strong> This is a simulation. No actual money will be deducted.
+                    <div class="small text-muted mt-1">Clicking "Pay Now" will confirm your booking immediately.</div>
+                </div>
+            </div>
+
+            <div class="d-grid mt-5">
+                <button type="submit"
+                    class="btn btn-primary btn-lg py-3 fw-bold shadow-md position-relative overflow-hidden"
+                    id="payButton">
+                    <span class="btn-text"><i class="fas fa-lock me-2"></i>Pay ₹{{ "%.2f"|format(booking.total_price) }}
+                        Securely</span>
+                    <span class="spinner-border spinner-border-sm d-none ms-2" role="status" aria-hidden="true"></span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .payment-card {
+        transition: all 0.3s ease;
+        border: 2px solid transparent !important;
+    }
+
+    .btn-check:checked+.payment-card {
+        border-color: var(--primary-color) !important;
+        background-color: #f0f9ff;
+        transform: translateY(-5px);
+    }
+
+    .payment-card:hover {
+        transform: translateY(-5px);
+    }
+</style>
+
+<script>
+    document.getElementById('paymentForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const form = this;
+        const payButton = document.getElementById('payButton');
+        const btnText = payButton.querySelector('.btn-text');
+        const spinner = payButton.querySelector('.spinner-border');
+
+        // UI Loading State
+        payButton.disabled = true;
+        btnText.textContent = 'Processing Payment...';
+        spinner.classList.remove('d-none');
+
+        const formData = new FormData(form);
+
+        fetch(form.action, {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Success Animation or Redirect
+                    btnText.textContent = 'Payment Successful!';
+                    spinner.classList.add('d-none');
+                    payButton.classList.remove('btn-primary');
+                    payButton.classList.add('btn-success');
+
+                    setTimeout(() => {
+                        window.location.href = data.redirect;
+                    }, 1000);
+                } else {
+                    alert('Payment failed: ' + data.message);
+                    payButton.disabled = false;
+                    btnText.innerHTML = '<i class="fas fa-lock me-2"></i>Pay ₹{{ "%.2f"|format(booking.total_price) }} Securely';
+                    spinner.classList.add('d-none');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+                payButton.disabled = false;
+                btnText.innerHTML = '<i class="fas fa-lock me-2"></i>Pay ₹{{ "%.2f"|format(booking.total_price) }} Securely';
+                spinner.classList.add('d-none');
+            });
+    });
+</script>
+{% endblock %}
