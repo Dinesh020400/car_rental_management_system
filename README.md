@@ -16,21 +16,21 @@ A modern, full-featured car rental management system built with Flask, MongoDB, 
 
 ## 📑 Table of Contents
 
-- [✨ Key Highlights](#-key-highlights)
-- [🎯 Features](#-features)
+- [✨ Key Highlights](#key-highlights)
+- [🎯 Features](#features)
   - [User Features](#user-features)
   - [Admin Features](#admin-features)
-- [🛠️ Technology Stack](#-technology-stack)
-- [📁 Project Structure](#-project-structure)
-- [🚀 Installation & Setup](#-installation--setup)
-- [📖 Usage Guide](#-usage-guide)
-- [📸 Screenshots](#-screenshots)
-- [📚 Documentation](#-documentation)
-- [🎨 UI Theme](#-ui-theme)
-- [🔮 Future Enhancements](#-future-enhancements)
-- [🤝 Contributing](#-contributing)
-- [📝 License](#-license)
-- [👤 Contact](#-contact)
+- [🛠️ Technology Stack](#technology-stack)
+- [📁 Project Structure](#project-structure)
+- [🚀 Installation & Setup](#installation--setup)
+- [📖 Usage Guide](#usage-guide)
+- [📸 Screenshots](#screenshots)
+- [📚 Documentation](#documentation)
+- [🎨 UI Theme](#ui-theme)
+- [🔮 Future Enhancements](#future-enhancements)
+- [🤝 Contributing](#contributing)
+- [📝 License](#license)
+- [👤 Contact](#contact)
 
 ---
 
