@@ -4,6 +4,7 @@
 
 {% block content %}
 <!-- Hero Section -->
+<<<<<<< HEAD
 <div class="hero-section text-center fade-in-up">
     <div class="row justify-content-center">
         <div class="col-lg-8">
@@ -24,11 +25,31 @@
                 </a>
                 {% endif %}
             </div>
+=======
+<div class="row mb-5">
+    <div class="col-12">
+        <div class="p-5 mb-4 bg-primary text-white rounded-3 position-relative overflow-hidden">
+            <div class="container-fluid py-5 position-relative" style="z-index: 2;">
+                <h1 class="display-4 fw-bold mb-4">Find Your Perfect Ride</h1>
+                <p class="col-md-8 fs-4 mb-4">Discover our premium selection of vehicles at competitive prices. Book easily and hit the road in style.</p>
+                <div class="d-flex gap-3 flex-wrap">
+                    {% if not session.get('user_id') %}
+                    <a href="{{ url_for('register') }}" class="btn btn-light btn-lg">Register Now</a>
+                    <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-lg">Login</a>
+                    {% else %}
+                    <a href="#available-cars" class="btn btn-light btn-lg">Browse Cars</a>
+                    {% endif %}
+                </div>
+            </div>
+            <!-- Background pattern -->
+            <div class="position-absolute top-0 end-0 w-50 h-100 d-none d-lg-block" style="background: url('https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?ixlib=rb-4.0.3&auto=format&fit=crop&q=80'); background-size: cover; opacity: 0.3; z-index: 1;"></div>
+>>>>>>> cacc96d203820384eeb4c1f8f91818e62ec3d418
         </div>
     </div>
 </div>
 
 <!-- Filter Section -->
+<<<<<<< HEAD
 <div class="row justify-content-center mb-5">
     <div class="col-xl-10">
         <div class="search-container fade-in-up p-4" style="animation-delay: 0.2s;">
@@ -110,11 +131,47 @@
                     </div>
                 </div>
             </form>
+=======
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form action="{{ url_for('home') }}" method="get" class="row g-3 align-items-end">
+                    <div class="col-md-4">
+                        <label for="search" class="form-label">Search</label>
+                        <input type="text" class="form-control" id="search" name="search" placeholder="Make, model or year..." value="{{ request.args.get('search', '') }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="sort" class="form-label">Sort By</label>
+                        <select class="form-select" id="sort" name="sort">
+                            <option value="price_asc" {% if request.args.get('sort') == 'price_asc' %}selected{% endif %}>Price: Low to High</option>
+                            <option value="price_desc" {% if request.args.get('sort') == 'price_desc' %}selected{% endif %}>Price: High to Low</option>
+                            <option value="year_desc" {% if request.args.get('sort') == 'year_desc' %}selected{% endif %}>Newest First</option>
+                            <option value="year_asc" {% if request.args.get('sort') == 'year_asc' %}selected{% endif %}>Oldest First</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="make" class="form-label">Make</label>
+                        <select class="form-select" id="make" name="make">
+                            <option value="">All Makes</option>
+                            {% set makes = cars|map(attribute='make')|unique|sort %}
+                            {% for make in makes %}
+                            <option value="{{ make }}" {% if request.args.get('make') == make %}selected{% endif %}>{{ make }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">Filter</button>
+                    </div>
+                </form>
+            </div>
+>>>>>>> cacc96d203820384eeb4c1f8f91818e62ec3d418
         </div>
     </div>
 </div>
 
 <!-- Available Cars Section -->
+<<<<<<< HEAD
 <div id="available-cars" class="py-4">
     <div class="d-flex justify-content-between align-items-end mb-4 px-2">
         <div>
@@ -124,11 +181,18 @@
         <span class="badge bg-primary rounded-pill px-3 py-2">
             {{ cars|selectattr('available', 'equalto', true)|list|length }} Available
         </span>
+=======
+<div id="available-cars">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">Available Cars</h2>
+        <span class="badge bg-primary">{{ cars|selectattr('available', 'equalto', true)|list|length }} cars found</span>
+>>>>>>> cacc96d203820384eeb4c1f8f91818e62ec3d418
     </div>
 
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
         {% for car in cars %}
         {% if car.available %}
+<<<<<<< HEAD
         <div class="col d-flex align-items-stretch fade-in-up" style="animation-delay: 0.{{ loop.index }}s">
             <div class="card w-100 border-0 shadow-sm transition-hover">
                 <div class="position-relative overflow-hidden">
@@ -184,6 +248,25 @@
                                 View Details
                             </a>
                         </div>
+=======
+        <div class="col">
+            <div class="card h-100 car-card">
+                <div class="position-relative">
+                    <img src="/static/car_images/{{ car.image.split('/')[-1] }}" class="card-img-top" alt="{{ car.make }} {{ car.model }}">
+                    <div class="price-badge">₹{{ car.price_inr }}/day</div>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title fw-bold">{{ car.make }} {{ car.model }}</h5>
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="badge bg-light text-dark me-2">{{ car.year }}</span>
+                        <span class="badge bg-success">Available</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="{{ url_for('car_details', car_id=car.id) }}" class="btn btn-primary">View Details</a>
+                        {% if session.get('user_id') %}
+                        <a href="{{ url_for('book_car', car_id=car.id) }}" class="btn btn-outline-primary">Book Now</a>
+                        {% endif %}
+>>>>>>> cacc96d203820384eeb4c1f8f91818e62ec3d418
                     </div>
                 </div>
             </div>
@@ -193,16 +276,22 @@
     </div>
 
     {% if cars|selectattr('available', 'equalto', true)|list|length == 0 %}
+<<<<<<< HEAD
     <div class="text-center py-5">
         <div class="mb-3 text-muted display-1"><i class="fas fa-car-crash"></i></div>
         <h3>No vehicles found</h3>
         <p class="text-muted">Try adjusting your search criteria</p>
         <a href="{{ url_for('index') }}" class="btn btn-primary mt-3">Reset Filters</a>
+=======
+    <div class="alert alert-info mt-4">
+        <p class="mb-0">No cars available matching your criteria. Try adjusting your filters.</p>
+>>>>>>> cacc96d203820384eeb4c1f8f91818e62ec3d418
     </div>
     {% endif %}
 </div>
 
 <!-- Features Section -->
+<<<<<<< HEAD
 <div class="row mt-5 pt-5 mb-5">
     <div class="col-12 text-center mb-5">
         <h6 class="text-primary fw-bold text-uppercase letter-spacing-1 mb-2">Why Choose Us</h6>
@@ -235,6 +324,44 @@
             </div>
             <h4 class="fw-bold mb-3">24/7 Support</h4>
             <p class="text-muted mb-0">Our dedicated support team is available round the clock to assist you.</p>
+=======
+<div class="row mt-5 pt-5">
+    <div class="col-12 text-center mb-4">
+        <h2 class="fw-bold">Why Choose Us</h2>
+        <p class="text-muted">Experience the best car rental service with these amazing features</p>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body text-center p-4">
+                <div class="rounded-circle bg-primary bg-opacity-10 p-3 d-inline-flex mb-3">
+                    <i class="fas fa-car fa-2x text-primary"></i>
+                </div>
+                <h4 class="card-title">Wide Selection</h4>
+                <p class="card-text text-muted">Choose from our diverse fleet of vehicles to match your needs and preferences.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body text-center p-4">
+                <div class="rounded-circle bg-primary bg-opacity-10 p-3 d-inline-flex mb-3">
+                    <i class="fas fa-money-bill-wave fa-2x text-primary"></i>
+                </div>
+                <h4 class="card-title">Best Rates</h4>
+                <p class="card-text text-muted">Enjoy competitive pricing with no hidden fees or charges.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body text-center p-4">
+                <div class="rounded-circle bg-primary bg-opacity-10 p-3 d-inline-flex mb-3">
+                    <i class="fas fa-headset fa-2x text-primary"></i>
+                </div>
+                <h4 class="card-title">24/7 Support</h4>
+                <p class="card-text text-muted">Our customer service team is always ready to assist you whenever you need help.</p>
+            </div>
+>>>>>>> cacc96d203820384eeb4c1f8f91818e62ec3d418
         </div>
     </div>
 </div>

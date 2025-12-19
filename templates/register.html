@@ -3,6 +3,7 @@
 {% block title %}Register - Car Rental System{% endblock %}
 
 {% block content %}
+<<<<<<< HEAD
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-xl-10 col-lg-12">
@@ -129,11 +130,34 @@
                             </div>
                         </div>
                     </div>
+=======
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">Register</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('register') }}">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Register</button>
+                </form>
+                <div class="mt-3">
+                    <p>Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
+>>>>>>> cacc96d203820384eeb4c1f8f91818e62ec3d418
                 </div>
             </div>
         </div>
     </div>
 </div>
+<<<<<<< HEAD
 
 <script>
     document.getElementById('togglePassword').addEventListener('click', function (e) {
@@ -151,4 +175,6 @@
         }
     });
 </script>
+=======
+>>>>>>> cacc96d203820384eeb4c1f8f91818e62ec3d418
 {% endblock %}
